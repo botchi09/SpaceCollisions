@@ -8,11 +8,12 @@ function indexExistsInBodies(bodies, lindex) {
 	return false
 }
 
+//TODO: Convert all explosion to SENSORS!
 var contactListener = {
-	PreSolve: function(contact) {
+	BeginContactBody: function(contact) {
 		var contactA = contact.GetFixtureA()
 		var contactB = contact.GetFixtureB()
-		
+		//console.log("CONTACT", contact)
 		
 		var explosionBody = null
 		var explosionSubject = null
@@ -27,40 +28,52 @@ var contactListener = {
 			explosionSubject = contactA.body
 		}
 		
-		if (explosionBody && explosionBody.isExplosion) {
+		if (explosionBody && explosionBody.isExplosion && explosionSubject
+		&& !(explosionBody.isExplosion && explosionSubject.isExplosion)) {
+
 			if (!explosionBody.contactList) {
 				explosionBody.contactList = []
 			}
 			if (explosionBody.lindex != explosionSubject.lindex
 				&& !indexExistsInBodies(explosionBody.contactList, explosionSubject.lindex)
-				&& explosionBody.isExplosion && !explosionSubject.isExplosion) {
+				&& explosionBody.isExplosion && !explosionSubject.isExplosion && !explosionSubject.exploded) {
 				
 				if (explosionSubject.isExplosive) {
-					explosionSubject.onHit = null
-					QueueDestroy(explosionSubject)
+					//explosionSubject.onHit = null
+					//QueueDestroy(explosionSubject)
+					
 				} else {
+					explosionSubject.exploded = true
 					explosionBody.contactList.push(explosionSubject)
 				}
 			}
-			
-			if (!explosionBody.hasTicked) {
-				explosionBody.hasTicked = true
-				explosionBody.isExplosion = false
-				QueueExec(function() {
+			console.log("cur subject", explosionSubject, explosionBody.contactList)
+			//TODO:Issue of multiple weird clips happening if two explosion get ahold of the same data
+			QueueExec(function() {
+				if (!explosionBody.hasTicked) {
+					explosionBody.hasTicked = true
+					//explosionBody.isExplosion = false
+					
 					
 					console.log("BOOM",explosionBody.contactList)
-					if (explosionBody.contactList.length != 0) {
+					if (explosionBody.contactList.length > 0) {
 						for (var subject in explosionBody.contactList) {
-							
-							doClip(explosionBody.contactList[subject], explosionBody, false)
+							var curSubject = explosionBody.contactList[subject]
+							if ( !curSubject.isExplosion
+							&& curSubject !== null && curSubject !== undefined) {
+								doClip(curSubject, explosionBody, false)
+								console.log("subject: ",curSubject)
+
+							}
 							
 						}
 					} else {
 						QueueDestroy(explosionBody)
 					}
-			
-				})
-			}
+				
+					
+				}
+			},1)
 			
 		}
 		
@@ -70,7 +83,7 @@ var contactListener = {
 		if (contactB.body.onHit) {
 			contactB.body.onHit(contactA, contact)
 		}
-		
+	
 		
 	}
 }

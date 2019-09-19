@@ -117,14 +117,36 @@ function createPolygon(allPolygons, ground, options) {
 		if (options && options.density) {
 			density = options.density
 		}
-		var newFixture = polyAnchor.CreateFixtureFromShape(shape, density)
+		var newFixture = new b2FixtureDef()
+		newFixture.shape = shape
+		newFixture.density = density
+		newFixture.isSensor = options.isSensor || false
+		
+		polyAnchor.CreateFixtureFromDef(newFixture)
 		fullPoly.push(newFixture)
 	}
 	
 	return body
 }
-
-
+/*
+function createSensor(allPolygons) {
+	var polygons = allPolygons.decomp
+	var sensor = new b2BodyDef()
+	sensor.shape = shape
+	sensor.isSensor = true
+	
+	for (var poly = 0; poly<polygons.length; poly++) {
+		var shape = new b2PolygonShape()
+		shape.vertices = tob2Vec2(polygons[poly])
+		var density = 1
+		if (options && options.density) {
+			density = options.density
+		}
+		var newFixture = sensor.CreateFixtureFromShape(shape, 0)
+		fullPoly.push(newFixture)
+	}
+	
+}*/
 
 function doClip(body, body2, isUnion) {
 	if (body && body2 && body.getCurrentPoints && body2.getCurrentPoints) {

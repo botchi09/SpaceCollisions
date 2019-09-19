@@ -16,7 +16,7 @@ var forwardThrust = 0
 player.init = function() {
 	var turnThrustMultiplier = 0.1
 	var forwardThrustMultiplier = 1
-	console.log(player)
+	console.log("player body:", player)
 	density = player.body.fixtures[0].density
 	turnThrust = turnThrustMultiplier*density
 	forwardThrust = forwardThrustMultiplier*density
@@ -130,7 +130,6 @@ player.startShoot = function() {
 			var pos = this.GetPosition() //save as value
 			QueueDestroy(this)
 			this.onHit = null
-
 			doExplosion(pos, 2)
 				
 		}

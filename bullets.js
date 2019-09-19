@@ -18,7 +18,7 @@ function createBullet(bulletStruct) {
 		
 		var polygon = bulletStruct.shape
 		var triangulated = triangulateConcavePolygon(polygon)
-		var body = createPolygon(triangulated, false, {gravityScale:0, density: 0.1, isBullet: true})
+		var body = createPolygon(triangulated, false, {gravityScale:0, density: 0.1, isBullet: true, isSensor: bulletStruct.isSensor})
 		//console.log(polygon, triangulated, body)
 		body.SetTransform(bulletStruct.origin, bulletStruct.angle || 0)
 		body.SetLinearVelocity(bulletStruct.velocity || new b2Vec2(0, 0))
@@ -41,10 +41,11 @@ function createBullet(bulletStruct) {
 function doExplosion(origin, radius) {
 	//lindex to avoid clipping myself
 	
-	console.log("me",this)
+	//console.log("me",this)
 	QueueExec(function() {
 		var explosion = createBullet({
 			isExplosion: true,
+			isSensor: true,
 			shape: generateCircle(radius*10, new b2Vec2(radius, radius), 0),
 			origin: new b2Vec2(origin.x-radius, origin.y-radius)
 			

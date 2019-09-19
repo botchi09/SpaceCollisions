@@ -39,6 +39,7 @@ function playground() {
 
 	var playerTriangulated = triangulateConcavePolygon([[0,0],[0.6,0],[0.3,1]])
 	var playerBody = createPolygon(playerTriangulated, false, {gravityScale:0, density: 1})
+	
 	player.body = playerBody
 	playerBody.SetTransform(new b2Vec2(3,2),0)
 	
@@ -52,6 +53,8 @@ function playground() {
 	
 	var body = createPolygon(triangulated, false, {gravityScale:0, density: 1})
 	body.SetTransform(new b2Vec2(-4,2),0)
+	
+	console.log("asteroid",body)
 	//body.SetAngle(1)
 	
 	/*

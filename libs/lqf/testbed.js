@@ -23,9 +23,7 @@ var test = {}
 var projector = new THREE.Projector()
 var planeZ = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0)
 var g_groundBody = null
-var destroyQueue = [] //Bodies to be destroyed after step
-var createQueue = []
-var functionQueue = [] //Usually used to create bodies with specific parameters
+
 
 var windowWidth = 0
 var windowHeight = 0
@@ -193,51 +191,14 @@ var ResetWorld = function() {
 	camera.position.z = 100
 }
 
-function ExecFunctionQueue() {
-	for (func in functionQueue) {
-		functionQueue[func]()
-	}
-	functionQueue = []
-}
-
-function DestroyBodyQueue() {
-	for (body in destroyQueue) {
-		world.DestroyBody(destroyQueue[body])
-	}
-	destroyQueue = []
-}
-
-function CreateBodyQueue() {
-	for (body in createQueue) {
-		//world.CreateBody(createQueue[body])
-		createPolygon(createQueue[body].triangulated, createQueue[body].isGround, createQueue[body].options)
-	}
-	createQueue = []
-}
-
-function QueueDestroy(body) {
-	destroyQueue.push(body)
-}
-
-function QueueCreate(triangulated, isGround, options) {
-	createQueue.push({triangulated: triangulated, isGround: isGround, options: options})
-}
-
-//Deferred function until AFTER steps
-function QueueExec(func) {
-	functionQueue.push(func)
-}
-
-var initFunctionExecuted = false
 
 var Step = function() {
 	
 	world.Step(timeStep, velocityIterations, positionIterations)
 	//Must be done AFTER each step or bugs happen
-	DestroyBodyQueue()
-	CreateBodyQueue()
-	ExecFunctionQueue()
-	
+	if (DeferredFunctionsExec) {
+		DeferredFunctionsExec()
+	}
 	
 }
 
