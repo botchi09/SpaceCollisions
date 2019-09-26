@@ -33,11 +33,6 @@ function CreateBodyQueue() {
 	createQueue = []
 }
 
-//Singleton clipping queue to prevent any conflicts of clipping full stop
-function ClipQueue() {
-	
-}
-
 function QueueDestroy(body) {
 	destroyQueue.push(body)
 }

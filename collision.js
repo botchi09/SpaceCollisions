@@ -13,7 +13,7 @@ var contactListener = {
 	BeginContactBody: function(contact) {
 		var contactA = contact.GetFixtureA()
 		var contactB = contact.GetFixtureB()
-		//console.log("CONTACT", contact)
+		console.log("CONTACT", contact)
 		
 		var explosionBody = null
 		var explosionSubject = null
@@ -28,7 +28,23 @@ var contactListener = {
 			explosionSubject = contactA.body
 		}
 		
-		if (explosionBody && explosionBody.isExplosion && explosionSubject
+		
+		//TODO: Provisional explosion clipping code. Very inefficient. Scales poorly with large num of bodies.
+			for (var body in world.bodies) {
+				var curBody = world.bodies[body]
+				if (!curBody.isClipping) {
+					if (explosionBody && curBody && curBody.lindex != explosionBody.lindex) {
+						curBody.isClipping = true
+						QueueExec(function() {	
+							
+							//doClip(curBody, explosionBody, false)
+						},1)
+					}
+				}
+			}
+		
+		
+		/*if (explosionBody && explosionBody.isExplosion && explosionSubject
 		&& !(explosionBody.isExplosion && explosionSubject.isExplosion)) {
 
 			if (!explosionBody.contactList) {
@@ -75,7 +91,7 @@ var contactListener = {
 				}
 			},1)
 			
-		}
+		}*/
 		
 		if (contactA.body.onHit) {
 			contactA.body.onHit(contactB, contact) //Overload with contact struct. 1st arg provided to avoid confusion.
